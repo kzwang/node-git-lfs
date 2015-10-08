@@ -1,9 +1,12 @@
 {
   "name": "node-git-lfs",
   "version": "0.0.0",
+  "license": "Apache-2.0",
+  "description": "Git LFS server NodeJS implementation",
   "scripts": {
     "start": "node ./server.js"
   },
+  "repository": "kzwang/node-git-lfs",
   "dependencies": {
     "express": "~4.13.3",
     "body-parser": "~1.14.1",
