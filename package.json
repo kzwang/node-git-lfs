@@ -1,0 +1,13 @@
+{
+  "name": "node-git-lfs",
+  "version": "0.0.0",
+  "scripts": {
+    "start": "node ./server.js"
+  },
+  "dependencies": {
+    "express": "~4.13.3",
+    "body-parser": "~1.14.1",
+    "cookie-parser": "~1.4.0",
+    "morgan": "~1.6.1"
+  }
+}
