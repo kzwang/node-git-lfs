@@ -1,0 +1,15 @@
+{
+  "base_url": "http://localhost:3000/",
+  "db": {
+    "connection": "mongodb://localhost/lfs",
+    "options": {
+      "db": {
+        "native_parser": true
+      },
+      "server": {
+        "poolSize": 5,
+        "keepAlive": 1
+      }
+    }
+  }
+}
