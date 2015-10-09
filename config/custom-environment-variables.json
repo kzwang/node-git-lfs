@@ -1,0 +1,12 @@
+{
+  "store": {
+    "type": "LFS_STORE_TYPE",
+    "options": {
+      "access_key": "AWS_ACCESS_KEY",
+      "secret_key": "AWS_SECRET_KEY",
+      "bucket": "LFS_STORE_S3_BUCKET",
+      "endpoint": "LFS_STORE_S3_ENDPOINT",
+      "region": "LFS_STORE_S3_REGION"
+    }
+  }
+}

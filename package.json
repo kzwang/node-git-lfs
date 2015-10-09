@@ -5,11 +5,12 @@
   "description": "Git LFS server NodeJS implementation",
   "scripts": {
     "start": "node ./server.js",
-    "test": "node_modules/.bin/mocha ./test/ --recursive",
-    "coverage": "node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha -- ./test/ --recursive"
+    "test": "NODE_ENV=test node_modules/.bin/mocha ./test/ --recursive --require co-mocha",
+    "coverage": "NODE_ENV=test node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha -- ./test/ --recursive --require co-mocha"
   },
   "repository": "kzwang/node-git-lfs",
   "dependencies": {
+    "aws-sdk": "^2.2.9",
     "co": "^4.6.0",
     "co-express": "^1.2.1",
     "config": "^1.16.0",
@@ -25,6 +26,7 @@
     "co-mocha": "^1.1.2",
     "istanbul": "^0.3.22",
     "mocha": "^2.3.3",
+    "s3rver": "0.0.8",
     "supertest": "^1.1.0"
   }
 }

@@ -1,5 +1,6 @@
 var request = require('supertest');
 var config = require('config');
+var mongoose = require('mongoose');
 
 var chai = require('chai');
 chai.use(require('chai-string'));
@@ -11,6 +12,11 @@ var app = require('../lib/app');
 const BASE_URL = config.get('base_url');
 
 describe('Batch Endpoint', function() {
+
+    beforeEach(function() {
+        mongoose.connection.db.dropDatabase();
+    });
+
     it('should return 422 for invalid request body', function(done) {
         request(app)
             .post('/testuser/testrepo/objects/batch')
@@ -54,7 +60,7 @@ describe('Batch Endpoint', function() {
                 should.exist(res.body.objects[0].actions);
                 should.exist(res.body.objects[0].actions.upload);
 
-                res.body.objects[0].actions.upload.href.should.startWith(BASE_URL + '/testuser/testrepo/' );
+                res.body.objects[0].actions.upload.href.should.startWith(BASE_URL + '/testuser/testrepo/objects/' );
             })
             .expect(200, done);
     });

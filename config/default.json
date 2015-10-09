@@ -11,5 +11,9 @@
         "keepAlive": 1
       }
     }
+  },
+  "store": {
+    "type": "s3",
+    "options": {}
   }
 }

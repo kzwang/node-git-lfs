@@ -1,0 +1,9 @@
+{
+  "store": {
+    "type": "s3",
+    "options": {
+      "endpoint": "http://localhost:4569",
+      "bucket": "test"
+    }
+  }
+}
