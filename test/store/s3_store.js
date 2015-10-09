@@ -14,7 +14,7 @@ var should = chai.should();
 var S3Store = require('../../lib/store/s3_store');
 
 
-describe('Objects Endpoint', function() {
+describe('S3 Store', function() {
 
     var s3_server, s3_client;
 
@@ -36,6 +36,8 @@ describe('Objects Endpoint', function() {
                 }
 
                 s3_client = new AWS.S3({
+                    accessKeyId: 'test',
+                    secretAccessKey: 'test',
                     endpoint: 'http://localhost:4569',
                     s3ForcePathStyle: true
                 });
@@ -75,25 +77,32 @@ describe('Objects Endpoint', function() {
     });
 
     it('should be able to put object', function *(done) {
-        let store = new S3Store({
-            'endpoint': 'http://localhost:4569',
-            'bucket': 'test'
-        });
-        let body = 'testbody';
-        let s = new stream.Readable();
-        s.push(body);
-        s.push(null);
-        yield store.put('testuser', 'testrepo', 'testid', s);
+        try {
+            let store = new S3Store({
+                'access_key': 'test',
+                'secret_key': 'test',
+                'endpoint': 'http://localhost:4569',
+                'bucket': 'test'
+            });
+            let body = 'testbody';
+            let s = new stream.Readable();
+            s.push(body);
+            s.push(null);
+            yield store.put('testuser', 'testrepo', 'testid', s);
 
-        let params= {
-            Bucket: 'test',
-            Key: 'testuser/testrepo/testid'
-        };
-        s3_client.headObject(params, function(err, data) {
-            if (err) return done(err);
-            data.ContentLength.should.equal(String(body.length));
-            done();
-        });
+            let params= {
+                Bucket: 'test',
+                Key: 'testuser/testrepo/testid'
+            };
+            s3_client.headObject(params, function(err, data) {
+                if (err) return done(err);
+                data.ContentLength.should.equal(String(body.length));
+                done();
+            });
+        } catch(err) {
+            done(err);
+        }
+
 
     });
 

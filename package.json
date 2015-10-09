@@ -12,6 +12,7 @@
   "dependencies": {
     "aws-sdk": "^2.2.9",
     "co": "^4.6.0",
+    "co-body": "^4.0.0",
     "co-express": "^1.2.1",
     "config": "^1.16.0",
     "express": "~4.13.3",

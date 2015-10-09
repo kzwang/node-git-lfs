@@ -43,6 +43,8 @@ describe('Objects Endpoint', function() {
                     }
 
                     var s3 = new AWS.S3({
+                        accessKeyId: 'test',
+                        secretAccessKey: 'test',
                         endpoint: 'http://localhost:4569',
                         s3ForcePathStyle: true
                     });
