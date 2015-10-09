@@ -15,6 +15,8 @@ var should = chai.should();
 
 var app = require('../lib/app');
 
+var LfsMeta = require('../lib/model/lfs_meta');
+
 const BASE_URL = config.get('base_url');
 
 
@@ -71,5 +73,31 @@ describe('Objects Endpoint', function() {
             .put('/testuser/testrepo/objects/test')
             .send('testObject')
             .expect(200, done);
+    });
+
+    it('should return 404 for get non exist object', function(done) {
+        request(app)
+            .get('/testuser/testrepo/objects/not_exist')
+            .expect(404, done);
+    });
+
+    it('should success for get exist object', function* (done) {
+        let testObject = 'testObject';
+        try {
+            yield LfsMeta.saveMeta('testuser', 'testrepo', 'test', {size: testObject.length});
+        } catch(err) {
+            return done(err);
+        }
+        request(app)
+            .put('/testuser/testrepo/objects/test')
+            .send(testObject)
+            .end(function(err, data) {
+                if (err) return done(err);
+                request(app)
+                    .get('/testuser/testrepo/objects/test')
+                    .expect(testObject)
+                    .expect('Content-Length', String(testObject.length))
+                    .expect(200, done);
+            });
     });
 });

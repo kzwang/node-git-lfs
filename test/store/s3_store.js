@@ -13,6 +13,11 @@ var should = chai.should();
 
 var S3Store = require('../../lib/store/s3_store');
 
+const TEST_AWS_ACEESS_KEY = 'test';
+const TEST_AWS_SECRET_KEY = 'test';
+const TEST_S3_BUCKET = 'test';
+const TEST_S3_ENDPOINT = 'http://localhost:4569';
+
 
 describe('S3 Store', function() {
 
@@ -36,14 +41,14 @@ describe('S3 Store', function() {
                 }
 
                 s3_client = new AWS.S3({
-                    accessKeyId: 'test',
-                    secretAccessKey: 'test',
-                    endpoint: 'http://localhost:4569',
+                    accessKeyId: TEST_AWS_ACEESS_KEY,
+                    secretAccessKey: TEST_AWS_SECRET_KEY,
+                    endpoint: TEST_S3_ENDPOINT,
                     s3ForcePathStyle: true
                 });
 
                 var params = {
-                    Bucket: 'test'
+                    Bucket: TEST_S3_BUCKET
                 };
 
                 s3_client.createBucket(params, done);
@@ -79,10 +84,10 @@ describe('S3 Store', function() {
     it('should be able to put object', function *(done) {
         try {
             let store = new S3Store({
-                'access_key': 'test',
-                'secret_key': 'test',
-                'endpoint': 'http://localhost:4569',
-                'bucket': 'test'
+                'access_key': TEST_AWS_ACEESS_KEY,
+                'secret_key': TEST_AWS_SECRET_KEY,
+                'endpoint': TEST_S3_ENDPOINT,
+                'bucket': TEST_S3_BUCKET
             });
             let body = 'testbody';
             let s = new stream.Readable();
@@ -91,7 +96,7 @@ describe('S3 Store', function() {
             yield store.put('testuser', 'testrepo', 'testid', s);
 
             let params= {
-                Bucket: 'test',
+                Bucket: TEST_S3_BUCKET,
                 Key: 'testuser/testrepo/testid'
             };
             s3_client.headObject(params, function(err, data) {
@@ -102,8 +107,41 @@ describe('S3 Store', function() {
         } catch(err) {
             done(err);
         }
+    });
 
+    it('should be able to get object', function(done) {
+        let store = new S3Store({
+            'access_key': TEST_AWS_ACEESS_KEY,
+            'secret_key': TEST_AWS_SECRET_KEY,
+            'endpoint': TEST_S3_ENDPOINT,
+            'bucket': TEST_S3_BUCKET
+        });
 
+        let body = 'testbody';
+        let s = new stream.Readable();
+        s.push(body);
+        s.push(null);
+
+        let params= {
+            Bucket: TEST_S3_BUCKET,
+            Key: 'testuser/testrepo/testid',
+            Body: s
+        };
+        s3_client.upload(params, function(err, data) {
+            if (err) return done(err);
+
+            let s = store.get('testuser', 'testrepo', 'testid');
+            s.setEncoding('utf8');
+            let string = '';
+            s.on('data',function(chunk){
+                string += chunk;
+            });
+
+            s.on('end',function(){
+                string.should.equal(body);
+                done();
+            });
+        });
     });
 
 
