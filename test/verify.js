@@ -124,4 +124,13 @@ describe('Verify Endpoint', function() {
 
         });
     });
+
+    it('should return 422 for invalid request', function(done) {
+        request(app)
+            .post('/testuser/testrepo/objects/verify')
+            .send({
+                "test": "test"
+            })
+            .expect(422, done);
+    });
 });

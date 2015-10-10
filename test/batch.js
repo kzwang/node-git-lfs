@@ -179,8 +179,31 @@ describe('Batch Endpoint', function() {
                 .expect(200, done);
 
         });
+    });
 
+    it('should handle verify operation', function(done) {
+        request(app)
+            .post('/testuser/testrepo/objects/batch')
+            .send({
+                "operation": "verify",
+                "objects": [
+                    {
+                        "oid": "1111111",
+                        "size": 123
+                    }
+                ]
+            })
+            .expect(function(res) {
+                should.exist(res.body.objects);
+                res.body.objects.should.have.length(1);
+                res.body.objects[0].oid.should.equal('1111111');
+                res.body.objects[0].size.should.equal(123);
 
+                should.exist(res.body.objects[0].actions);
+                should.exist(res.body.objects[0].actions.verify);
 
+                res.body.objects[0].actions.verify.href.should.equal(BASE_URL + 'testuser/testrepo/objects/verify');
+            })
+            .expect(200, done);
     });
 });
