@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var app = require('./lib/app');
 var http = require('http');
 

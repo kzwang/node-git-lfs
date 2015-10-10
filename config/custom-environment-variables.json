@@ -1,4 +1,5 @@
 {
+  "base_url": "LFS_BASE_URL",
   "store": {
     "type": "LFS_STORE_TYPE",
     "options": {

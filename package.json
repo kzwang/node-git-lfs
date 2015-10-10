@@ -6,6 +6,9 @@
   "scripts": {
     "test": "make test-coveralls"
   },
+  "bin": {
+    "node-git-lfs": "./git-lfs-server.js"
+  },
   "repository": "kzwang/node-git-lfs",
   "dependencies": {
     "aws-sdk": "^2.2.9",
