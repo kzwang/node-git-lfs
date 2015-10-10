@@ -22,7 +22,7 @@ const BASE_URL = config.get('base_url');
 
 describe('Objects Endpoint', function() {
 
-    var s3_server, s3_client;
+    var s3_server;
 
     beforeEach(function (done) {
         let store_type = config.get('store.type');
@@ -43,7 +43,7 @@ describe('Objects Endpoint', function() {
                         return done(err);
                     }
 
-                    s3_client = new AWS.S3({
+                    var s3_client = new AWS.S3({
                         accessKeyId: 'test',
                         secretAccessKey: 'test',
                         endpoint: 'http://localhost:4569',
@@ -56,6 +56,8 @@ describe('Objects Endpoint', function() {
 
                     s3_client.createBucket(params, done);
                 });
+        } else {
+            done();
         }
 
     });
@@ -63,6 +65,8 @@ describe('Objects Endpoint', function() {
     afterEach(function (done) {
         if (s3_server) {
             s3_server.close(done);
+        } else {
+            done();
         }
 
     });

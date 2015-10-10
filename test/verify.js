@@ -54,6 +54,8 @@ describe('Verify Endpoint', function() {
 
                     s3_client.createBucket(params, done);
                 });
+        } else {
+            done();
         }
 
     });
@@ -61,33 +63,28 @@ describe('Verify Endpoint', function() {
     afterEach(function (done) {
         if (s3_server) {
             s3_server.close(done);
+        } else {
+            done();
         }
 
     });
 
     it('should return 200 for valid object', function(done) {
         let body = 'testbody';
-        let s = new stream.Readable();
-        s.push(body);
-        s.push(null);
 
-        let params= {
-            Bucket: config.get('store.options.bucket'),
-            Key: 'testuser/testrepo/testid',
-            Body: s
-        };
-        s3_client.upload(params, function(err, data) {
-            if (err) return done(err);
-
-            request(app)
-                .post('/testuser/testrepo/objects/verify')
-                .send({
-                    "oid": "testid",
-                    "size": body.length
-                })
-                .expect(200, done);
-
-        });
+        // upload test file
+        request(app)
+            .put('/testuser/testrepo/objects/testid')
+            .send(body)
+            .end(function() {
+                request(app)
+                    .post('/testuser/testrepo/objects/verify')
+                    .send({
+                        "oid": "testid",
+                        "size": body.length
+                    })
+                    .expect(200, done);
+            });
     });
 
     it('should return 422 for non exist object', function(done) {
@@ -102,27 +99,19 @@ describe('Verify Endpoint', function() {
 
     it('should return 422 for size not match', function(done) {
         let body = 'testbody';
-        let s = new stream.Readable();
-        s.push(body);
-        s.push(null);
-
-        let params= {
-            Bucket: config.get('store.options.bucket'),
-            Key: 'testuser/testrepo/testid',
-            Body: s
-        };
-        s3_client.upload(params, function(err, data) {
-            if (err) return done(err);
-
-            request(app)
-                .post('/testuser/testrepo/objects/verify')
-                .send({
-                    "oid": "testid",
-                    "size": body.length + 1
-                })
-                .expect(422, done);
-
-        });
+        // upload test file
+        request(app)
+            .put('/testuser/testrepo/objects/testid')
+            .send(body)
+            .end(function() {
+                request(app)
+                    .post('/testuser/testrepo/objects/verify')
+                    .send({
+                        "oid": "testid",
+                        "size": body.length + 1
+                    })
+                    .expect(422, done);
+            });
     });
 
     it('should return 422 for invalid request', function(done) {

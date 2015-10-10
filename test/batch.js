@@ -20,7 +20,7 @@ const BASE_URL = config.get('base_url');
 
 describe('Batch Endpoint', function() {
 
-    var s3_server, s3_client;
+    var s3_server;
 
     beforeEach(function (done) {
         let store_type = config.get('store.type');
@@ -41,7 +41,7 @@ describe('Batch Endpoint', function() {
                         return done(err);
                     }
 
-                    s3_client = new AWS.S3({
+                    var s3_client = new AWS.S3({
                         accessKeyId: config.get('store.options.access_key'),
                         secretAccessKey: config.get('store.options.secret_key'),
                         endpoint: config.get('store.options.endpoint'),
@@ -54,6 +54,8 @@ describe('Batch Endpoint', function() {
 
                     s3_client.createBucket(params, done);
                 });
+        } else {
+            done();
         }
 
     });
@@ -61,6 +63,8 @@ describe('Batch Endpoint', function() {
     afterEach(function (done) {
         if (s3_server) {
             s3_server.close(done);
+        } else {
+            done();
         }
 
     });
@@ -164,48 +168,40 @@ describe('Batch Endpoint', function() {
     });
 
     it('should handle download operation', function(done) {
-
         let body = 'testbody';
-        let s = new stream.Readable();
-        s.push(body);
-        s.push(null);
+        // upload test file
+        request(app)
+            .put('/testuser/testrepo/objects/testid')
+            .send(body)
+            .end(function() {
+                request(app)
+                    .post('/testuser/testrepo/objects/batch')
+                    .send({
+                        "operation": "download",
+                        "objects": [
+                            {
+                                "oid": "testid",
+                                "size": body.length
+                            }
+                        ]
+                    })
+                    .expect(function(res) {
+                        should.exist(res.body.objects);
+                        res.body.objects.should.have.length(1);
+                        res.body.objects[0].oid.should.equal('testid');
+                        res.body.objects[0].size.should.equal(body.length);
 
-        let params= {
-            Bucket: config.get('store.options.bucket'),
-            Key: 'testuser/testrepo/testid',
-            Body: s
-        };
-        s3_client.upload(params, function(err, data) {
-            if (err) return done(err);
+                        should.exist(res.body.objects[0].actions);
+                        should.exist(res.body.objects[0].actions.download);
 
-            request(app)
-                .post('/testuser/testrepo/objects/batch')
-                .send({
-                    "operation": "download",
-                    "objects": [
-                        {
-                            "oid": "testid",
-                            "size": body.length
-                        }
-                    ]
-                })
-                .expect(function(res) {
-                    should.exist(res.body.objects);
-                    res.body.objects.should.have.length(1);
-                    res.body.objects[0].oid.should.equal('testid');
-                    res.body.objects[0].size.should.equal(body.length);
+                        res.body.objects[0].actions.download.href.should.equal(BASE_URL + 'testuser/testrepo/objects/testid' );
 
-                    should.exist(res.body.objects[0].actions);
-                    should.exist(res.body.objects[0].actions.download);
+                        should.exist(res.body.objects[0].actions.download.header);
+                        should.exist(res.body.objects[0].actions.download.header['Authorization']);
+                    })
+                    .expect(200, done);
+            });
 
-                    res.body.objects[0].actions.download.href.should.equal(BASE_URL + 'testuser/testrepo/objects/testid' );
-
-                    should.exist(res.body.objects[0].actions.download.header);
-                    should.exist(res.body.objects[0].actions.download.header['Authorization']);
-                })
-                .expect(200, done);
-
-        });
     });
 
     it('should handle verify operation', function(done) {
