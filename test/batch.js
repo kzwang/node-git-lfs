@@ -87,6 +87,24 @@ describe('Batch Endpoint', function() {
             .expect(422, done);
     });
 
+    it('should return valid content type header', function(done) {
+        request(app)
+            .post('/testuser/testrepo/objects/batch')
+            .send( {
+                "operation": "upload",
+                "objects": [
+                    {
+                        "oid": "1111111",
+                        "size": 123
+                    }
+                ]
+            })
+            .expect('Content-Type', /application\/vnd\.git-lfs\+json/)
+            .expect(200, done);
+
+    });
+
+
     it('should handle upload operation', function(done) {
         request(app)
             .post('/testuser/testrepo/objects/batch')
@@ -109,8 +127,14 @@ describe('Batch Endpoint', function() {
                 should.exist(res.body.objects[0].actions.upload);
                 should.exist(res.body.objects[0].actions.verify);
 
+
                 res.body.objects[0].actions.upload.href.should.startWith(BASE_URL + 'testuser/testrepo/objects/');
                 res.body.objects[0].actions.verify.href.should.equal(BASE_URL + 'testuser/testrepo/objects/verify');
+
+                should.exist(res.body.objects[0].actions.upload.header);
+                should.exist(res.body.objects[0].actions.upload.header['Authorization']);
+                should.exist(res.body.objects[0].actions.verify.header);
+                should.exist(res.body.objects[0].actions.verify.header['Authorization']);
             })
             .expect(200, done);
     });
@@ -175,6 +199,9 @@ describe('Batch Endpoint', function() {
                     should.exist(res.body.objects[0].actions.download);
 
                     res.body.objects[0].actions.download.href.should.equal(BASE_URL + 'testuser/testrepo/objects/testid' );
+
+                    should.exist(res.body.objects[0].actions.download.header);
+                    should.exist(res.body.objects[0].actions.download.header['Authorization']);
                 })
                 .expect(200, done);
 
@@ -203,6 +230,9 @@ describe('Batch Endpoint', function() {
                 should.exist(res.body.objects[0].actions.verify);
 
                 res.body.objects[0].actions.verify.href.should.equal(BASE_URL + 'testuser/testrepo/objects/verify');
+
+                should.exist(res.body.objects[0].actions.verify.header);
+                should.exist(res.body.objects[0].actions.verify.header['Authorization']);
             })
             .expect(200, done);
     });
