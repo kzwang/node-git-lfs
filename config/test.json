@@ -3,7 +3,10 @@
     "type": "s3",
     "options": {
       "endpoint": "http://localhost:4569",
-      "bucket": "test"
+      "bucket": "test",
+      "access_key": "test",
+      "secret_key": "test",
+      "grid_connection": "mongodb://localhost:27017/test"
     }
   }
 }

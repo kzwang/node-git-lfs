@@ -4,5 +4,5 @@ node_js:
 services:
   - mongodb
 env:
-  - LFS_STORE_TYPE=s3 LFS_STORE_S3_ENDPOINT=http://localhost:4569 AWS_ACCESS_KEY=test AWS_SECRET_KEY=test
-  - LFS_STORE_TYPE=grid LFS_STORE_GRID_CONNECTION=mongodb://localhost:27017/test
+  - LFS_STORE_TYPE=s3
+  - LFS_STORE_TYPE=grid
