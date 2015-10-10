@@ -17,7 +17,6 @@ var app = require('../lib/app');
 const BASE_URL = config.get('base_url');
 
 
-
 describe('Batch Endpoint', function() {
 
     var s3_server;
@@ -231,5 +230,67 @@ describe('Batch Endpoint', function() {
                 should.exist(res.body.objects[0].actions.verify.header['Authorization']);
             })
             .expect(200, done);
+    });
+
+    describe('Authentication', function() {
+
+        var TestAuthenticator = require('./../lib/authenticator/test');
+
+        afterEach(function() {
+            TestAuthenticator.CAN_READ = true;
+            TestAuthenticator.CAN_WRITE = true;
+        });
+
+        it('should return 403 if has authorization header but cannot read', function(done) {
+            TestAuthenticator.CAN_READ = false;
+            request(app)
+                .post('/testuser/testrepo/objects/batch')
+                .set('Authorization', 'test')
+                .send({
+                    "operation": "verify",
+                    "objects": [
+                        {
+                            "oid": "1111111",
+                            "size": 123
+                        }
+                    ]
+                })
+                .expect(403, done);
+        });
+
+        it('should return 401 if no authorization header and cannot read', function(done) {
+            TestAuthenticator.CAN_READ = false;
+            request(app)
+                .post('/testuser/testrepo/objects/batch')
+                .send({
+                    "operation": "verify",
+                    "objects": [
+                        {
+                            "oid": "1111111",
+                            "size": 123
+                        }
+                    ]
+                })
+                .expect('LFS-Authenticate', 'Basic realm="Git LFS"')
+                .expect(401, done);
+        });
+
+        it('should return 403 if has authorization header but cannot write', function(done) {
+            TestAuthenticator.CAN_READ = true;
+            TestAuthenticator.CAN_WRITE = false;
+            request(app)
+                .post('/testuser/testrepo/objects/batch')
+                .set('Authorization', 'test')
+                .send({
+                    "operation": "upload",
+                    "objects": [
+                        {
+                            "oid": "1111111",
+                            "size": 123
+                        }
+                    ]
+                })
+                .expect(403, done);
+        });
     });
 });

@@ -1,7 +1,12 @@
 {
   "base_url": "http://localhost:3000/",
+  "private": false,
   "store": {
     "type": "s3",
+    "options": {}
+  },
+  "authenticator": {
+    "type": "none",
     "options": {}
   }
 }

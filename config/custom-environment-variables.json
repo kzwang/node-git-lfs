@@ -1,5 +1,6 @@
 {
   "base_url": "LFS_BASE_URL",
+  "private": "LFS_PRIVATE",
   "store": {
     "type": "LFS_STORE_TYPE",
     "options": {
@@ -9,6 +10,13 @@
       "endpoint": "LFS_STORE_S3_ENDPOINT",
       "region": "LFS_STORE_S3_REGION",
       "grid_connection": "LFS_STORE_GRID_CONNECTION"
+    }
+  },
+  "authenticator": {
+    "type": "LFS_AUTHENTICATOR_TYPE",
+    "options": {
+      "username": "LFS_AUTHENTICATOR_USERNAME",
+      "password": "LFS_AUTHENTICATOR_PASSWORD"
     }
   }
 }

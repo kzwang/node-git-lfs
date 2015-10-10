@@ -8,5 +8,8 @@
       "secret_key": "test",
       "grid_connection": "mongodb://localhost:27017/test"
     }
+  },
+  "authenticator": {
+    "type": "test"
   }
 }
