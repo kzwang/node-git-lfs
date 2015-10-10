@@ -21,7 +21,7 @@ const TEST_S3_ENDPOINT = 'http://localhost:4569';
 
 describe('S3 Store', function() {
 
-    var s3_server, s3_client;
+    var s3_server, s3_client, store;
 
     beforeEach(function (done) {
         // cleanup s3 folder
@@ -54,6 +54,13 @@ describe('S3 Store', function() {
                 s3_client.createBucket(params, done);
             });
 
+        store = new S3Store({
+            'access_key': TEST_AWS_ACEESS_KEY,
+            'secret_key': TEST_AWS_SECRET_KEY,
+            'endpoint': TEST_S3_ENDPOINT,
+            'bucket': TEST_S3_BUCKET
+        });
+
     });
 
     afterEach(function (done) {
@@ -83,12 +90,6 @@ describe('S3 Store', function() {
 
     it('should be able to put object', function *(done) {
         try {
-            let store = new S3Store({
-                'access_key': TEST_AWS_ACEESS_KEY,
-                'secret_key': TEST_AWS_SECRET_KEY,
-                'endpoint': TEST_S3_ENDPOINT,
-                'bucket': TEST_S3_BUCKET
-            });
             let body = 'testbody';
             let s = new stream.Readable();
             s.push(body);
@@ -110,13 +111,6 @@ describe('S3 Store', function() {
     });
 
     it('should be able to get object', function(done) {
-        let store = new S3Store({
-            'access_key': TEST_AWS_ACEESS_KEY,
-            'secret_key': TEST_AWS_SECRET_KEY,
-            'endpoint': TEST_S3_ENDPOINT,
-            'bucket': TEST_S3_BUCKET
-        });
-
         let body = 'testbody';
         let s = new stream.Readable();
         s.push(body);
@@ -130,28 +124,25 @@ describe('S3 Store', function() {
         s3_client.upload(params, function(err, data) {
             if (err) return done(err);
 
-            let s = store.get('testuser', 'testrepo', 'testid');
-            s.setEncoding('utf8');
-            let string = '';
-            s.on('data',function(chunk){
-                string += chunk;
-            });
+            store.get('testuser', 'testrepo', 'testid').then(function(s) {
+                s.setEncoding('utf8');
+                let string = '';
+                s.on('data',function(chunk){
+                    string += chunk;
+                });
 
-            s.on('end',function(){
-                string.should.equal(body);
-                done();
-            });
+                s.on('end',function(){
+                    string.should.equal(body);
+                    done();
+                });
+            })
+
+
         });
     });
 
     describe('getSize', function() {
         it('should return object size', function(done) {
-            let store = new S3Store({
-                'access_key': TEST_AWS_ACEESS_KEY,
-                'secret_key': TEST_AWS_SECRET_KEY,
-                'endpoint': TEST_S3_ENDPOINT,
-                'bucket': TEST_S3_BUCKET
-            });
 
             let body = 'testbody';
             let s = new stream.Readable();
@@ -177,12 +168,6 @@ describe('S3 Store', function() {
         });
 
         it('should return -1 for non exist object', function(done) {
-            let store = new S3Store({
-                'access_key': TEST_AWS_ACEESS_KEY,
-                'secret_key': TEST_AWS_SECRET_KEY,
-                'endpoint': TEST_S3_ENDPOINT,
-                'bucket': TEST_S3_BUCKET
-            });
 
             store.getSize('testuser', 'testrepo', 'testid')
                 .then(function(size) {
@@ -195,26 +180,13 @@ describe('S3 Store', function() {
 
     describe('exist', function() {
         it('should return false for non exist object', function* () {
-            let store = new S3Store({
-                'access_key': TEST_AWS_ACEESS_KEY,
-                'secret_key': TEST_AWS_SECRET_KEY,
-                'endpoint': TEST_S3_ENDPOINT,
-                'bucket': TEST_S3_BUCKET
-            });
 
             var exist = yield store.exist('testuser', 'testrepo', 'not_exist');
             exist.should.equal(false);
 
         });
 
-        it('should return true foe exist object', function (done) {
-            let store = new S3Store({
-                'access_key': TEST_AWS_ACEESS_KEY,
-                'secret_key': TEST_AWS_SECRET_KEY,
-                'endpoint': TEST_S3_ENDPOINT,
-                'bucket': TEST_S3_BUCKET
-            });
-
+        it('should return true for exist object', function (done) {
             let body = 'testbody';
             let s = new stream.Readable();
             s.push(body);
