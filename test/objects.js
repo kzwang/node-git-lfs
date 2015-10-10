@@ -15,7 +15,6 @@ var should = chai.should();
 
 var app = require('../lib/app');
 
-var LfsMeta = require('../lib/model/lfs_meta');
 
 const BASE_URL = config.get('base_url');
 
@@ -23,9 +22,9 @@ const BASE_URL = config.get('base_url');
 
 describe('Objects Endpoint', function() {
 
-    var s3_server;
+    var s3_server, s3_client;
 
-    before(function (done) {
+    beforeEach(function (done) {
         let store_type = config.get('store.type');
         if (store_type === 's3') {
             // cleanup s3 folder
@@ -44,7 +43,7 @@ describe('Objects Endpoint', function() {
                         return done(err);
                     }
 
-                    var s3 = new AWS.S3({
+                    s3_client = new AWS.S3({
                         accessKeyId: 'test',
                         secretAccessKey: 'test',
                         endpoint: 'http://localhost:4569',
@@ -55,13 +54,13 @@ describe('Objects Endpoint', function() {
                         Bucket: config.get('store.options.bucket')
                     };
 
-                    s3.createBucket(params, done);
+                    s3_client.createBucket(params, done);
                 });
         }
 
     });
 
-    after(function (done) {
+    afterEach(function (done) {
         if (s3_server) {
             s3_server.close(done);
         }
@@ -81,13 +80,8 @@ describe('Objects Endpoint', function() {
             .expect(404, done);
     });
 
-    it('should success for get exist object', function* (done) {
+    it('should success for get exist object', function (done) {
         let testObject = 'testObject';
-        try {
-            yield LfsMeta.saveMeta('testuser', 'testrepo', 'test', {size: testObject.length});
-        } catch(err) {
-            return done(err);
-        }
         request(app)
             .put('/testuser/testrepo/objects/test')
             .send(testObject)

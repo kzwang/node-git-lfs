@@ -23,7 +23,7 @@ describe('S3 Store', function() {
 
     var s3_server, s3_client;
 
-    before(function (done) {
+    beforeEach(function (done) {
         // cleanup s3 folder
         child_process.execSync('rm -rf s3 && mkdir -p s3', {
             cwd: '/tmp'
@@ -56,7 +56,7 @@ describe('S3 Store', function() {
 
     });
 
-    after(function (done) {
+    afterEach(function (done) {
         if (s3_server) {
             s3_server.close(done);
         }
@@ -143,6 +143,105 @@ describe('S3 Store', function() {
             });
         });
     });
+
+    describe('getSize', function() {
+        it('should return object size', function(done) {
+            let store = new S3Store({
+                'access_key': TEST_AWS_ACEESS_KEY,
+                'secret_key': TEST_AWS_SECRET_KEY,
+                'endpoint': TEST_S3_ENDPOINT,
+                'bucket': TEST_S3_BUCKET
+            });
+
+            let body = 'testbody';
+            let s = new stream.Readable();
+            s.push(body);
+            s.push(null);
+
+            let params= {
+                Bucket: TEST_S3_BUCKET,
+                Key: 'testuser/testrepo/testid',
+                Body: s
+            };
+            s3_client.upload(params, function(err, data) {
+                if (err) return done(err);
+
+                store.getSize('testuser', 'testrepo', 'testid')
+                    .then(function(size) {
+                        size.should.equal(body.length);
+                        done();
+                    })
+                    .catch(done);
+
+            });
+        });
+
+        it('should return -1 for non exist object', function(done) {
+            let store = new S3Store({
+                'access_key': TEST_AWS_ACEESS_KEY,
+                'secret_key': TEST_AWS_SECRET_KEY,
+                'endpoint': TEST_S3_ENDPOINT,
+                'bucket': TEST_S3_BUCKET
+            });
+
+            store.getSize('testuser', 'testrepo', 'testid')
+                .then(function(size) {
+                    size.should.equal(-1);
+                    done();
+                })
+                .catch(done);
+        });
+    });
+
+    describe('exist', function() {
+        it('should return false for non exist object', function* () {
+            let store = new S3Store({
+                'access_key': TEST_AWS_ACEESS_KEY,
+                'secret_key': TEST_AWS_SECRET_KEY,
+                'endpoint': TEST_S3_ENDPOINT,
+                'bucket': TEST_S3_BUCKET
+            });
+
+            var exist = yield store.exist('testuser', 'testrepo', 'not_exist');
+            exist.should.equal(false);
+
+        });
+
+        it('should return true foe exist object', function (done) {
+            let store = new S3Store({
+                'access_key': TEST_AWS_ACEESS_KEY,
+                'secret_key': TEST_AWS_SECRET_KEY,
+                'endpoint': TEST_S3_ENDPOINT,
+                'bucket': TEST_S3_BUCKET
+            });
+
+            let body = 'testbody';
+            let s = new stream.Readable();
+            s.push(body);
+            s.push(null);
+
+            let params= {
+                Bucket: TEST_S3_BUCKET,
+                Key: 'testuser/testrepo/testid',
+                Body: s
+            };
+            s3_client.upload(params, function(err, data) {
+                if (err) return done(err);
+
+                store.exist('testuser', 'testrepo', 'testid')
+                    .then(function(exist) {
+                        exist.should.equal(true);
+                        done();
+                    })
+                    .catch(done);
+
+            });
+
+
+        });
+    });
+
+
 
 
 });
