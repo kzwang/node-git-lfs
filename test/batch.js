@@ -107,8 +107,10 @@ describe('Batch Endpoint', function() {
 
                 should.exist(res.body.objects[0].actions);
                 should.exist(res.body.objects[0].actions.upload);
+                should.exist(res.body.objects[0].actions.verify);
 
-                res.body.objects[0].actions.upload.href.should.startWith(BASE_URL + 'testuser/testrepo/objects/' );
+                res.body.objects[0].actions.upload.href.should.startWith(BASE_URL + 'testuser/testrepo/objects/');
+                res.body.objects[0].actions.verify.href.should.equal(BASE_URL + 'testuser/testrepo/objects/verify');
             })
             .expect(200, done);
     });
