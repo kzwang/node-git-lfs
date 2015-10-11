@@ -16,6 +16,7 @@ All configurations can be done via environment variable or configuration file
 #### Environment Variables
 
  - `LFS_BASE_URL` - URL of the LFS server - **required**
+ - `LFS_PORT` - HTTP portal of the LFS server, default to `3000` - **required**
  - `LFS_STORE_TYPE` - Object store type, can be either `s3` (for AWS S3) or `grid` (for MongoDB GridFS), default to `s3`  - **required**
  - `LFS_AUTHENTICATOR_TYPE` - Authenticator type, can be `basic` (for basic username and password), `none` (for no authentication), default to `none` - **required**
 
@@ -35,3 +36,13 @@ If **authenticator type** is `basic`:
 
   - `LFS_AUTHENTICATOR_USERNAME` - Username - **required**
   - `LFS_AUTHENTICATOR_PASSWORD` - Password - **required**
+  - `LFS_AUTHENTICATOR_CLIENT_PUBLIC_KEY` - Location of the client's public key
+
+
+##### SSH Environment Variables
+
+  - `LFS_SSH_ENABLED` - Enable SSH server, default to `true`
+  - `LFS_SSH_PORT` - SSH server port, default to `2222`
+  - `LFS_SSH_IP` - SSH server bind IP, default to `0.0.0.0`
+  - `LFS_SSH_PUBLIC_KEY` - SSH server public key
+  - `LFS_SSH_PRIVATE_KEY` - SSH server private key
