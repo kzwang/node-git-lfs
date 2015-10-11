@@ -1,12 +1,25 @@
 {
   "base_url": "http://localhost:3000/",
+  "port": 3000,
   "private": false,
   "store": {
     "type": "s3",
     "options": {}
   },
   "authenticator": {
-    "type": "none",
-    "options": {}
+    "type": "basic",
+    "options": {
+      "username": "test",
+      "password": "test"
+    }
+  },
+  "ssh": {
+    "enabled": true,
+    "port": 2222,
+    "ip": "0.0.0.0",
+    "key": {
+      "public": "./ssh/server.pub",
+      "private": "./ssh/server.pri"
+    }
   }
 }

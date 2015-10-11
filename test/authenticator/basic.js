@@ -1,6 +1,13 @@
 'use strict';
 
+var crypto = require('crypto');
+var fs = require('fs');
+var ssh_utils = require('ssh2').utils;
+
 var should = require('chai').should();
+
+
+
 
 var BasicAuthenticator = require('../../lib/authenticator/basic');
 
@@ -110,4 +117,48 @@ describe('Basic Authenticator', function() {
                 .catch(done);
         });
     });
+
+    describe('checkSSHAuthorization', function() {
+        beforeEach(function() {
+            authenticator = new BasicAuthenticator({
+                username: 'testuser',
+                password: 'testpass',
+                client_public_key: './ssh/client.pub'
+            });
+        });
+
+        it('should return undefined if no public key in option', function* () {
+            authenticator = new BasicAuthenticator({
+                username: 'testuser',
+                password: 'testpass'
+            });
+
+            var result = yield authenticator.checkSSHAuthorization();
+            should.not.exist(result);
+        });
+
+        it('should return undefined if signature not valid', function* () {
+            var key = ssh_utils.parseKey(fs.readFileSync('./ssh/server.pri'));
+            var algo = 'RSA-SHA1';
+            var data = new Buffer('test');
+            var sign = crypto.createSign(algo);
+            sign.update(data);
+            var sig = sign.sign(key.privateOrig, 'binary');
+            var result = yield authenticator.checkSSHAuthorization(null, null, algo, data, sig);
+            should.not.exist(result);
+        });
+
+        it('should return header if signature valid', function* () {
+            var key = ssh_utils.parseKey(fs.readFileSync('./ssh/client.pri'));
+            var algo = 'RSA-SHA1';
+            var data = new Buffer('test');
+            var sign = crypto.createSign(algo);
+            sign.update(data);
+            var sig = sign.sign(key.privateOrig, 'binary');
+            var result = yield authenticator.checkSSHAuthorization(null, null, algo, data, sig);
+            should.exist(result);
+            result.should.equal('Basic ' + new Buffer('testuser:testpass').toString('base64'));
+        });
+    });
+
 });

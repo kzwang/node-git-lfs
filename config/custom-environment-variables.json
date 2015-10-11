@@ -1,5 +1,6 @@
 {
   "base_url": "LFS_BASE_URL",
+  "port": "LFS_PORT",
   "private": "LFS_PRIVATE",
   "store": {
     "type": "LFS_STORE_TYPE",
@@ -17,6 +18,15 @@
     "options": {
       "username": "LFS_AUTHENTICATOR_USERNAME",
       "password": "LFS_AUTHENTICATOR_PASSWORD"
+    }
+  },
+  "ssh": {
+    "enabled": "LFS_SSH_ENABLED",
+    "port": "LFS_SSH_PORT",
+    "ip": "LFS_SSH_IP",
+    "key": {
+      "public": "LFS_SSH_PUBLIC_KEY",
+      "private": "LFS_SSH_PRIVATE_KEY"
     }
   }
 }

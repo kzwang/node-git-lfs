@@ -1,32 +1,29 @@
 #!/usr/bin/env node
 
+'use strict';
+
 var app = require('./lib/app');
 var http = require('http');
+var config = require('config');
 
-/**
- * Get port from environment and store in Express.
- */
+const PORT = parseInt(config.get('port'), 10) || 3000;
+const SSH_ENABLED = config.get('ssh.enabled');
 
-var port = parseInt(process.env.PORT, 10) || 3000;
-app.set('port', port);
+app.set('port', PORT);
 
 /**
  * Create HTTP server.
  */
-
 var server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+server.listen(PORT);
 server.on('error', onError);
 server.on('listening', onListening);
 
-/**
- * Event listener for HTTP server "error" event.
- */
 
 function onError(error) {
   if (error.syscall !== 'listen') {
@@ -48,10 +45,15 @@ function onError(error) {
   }
 }
 
-/**
- * Event listener for HTTP server "listening" event.
- */
-
 function onListening() {
-  console.log('Listening on port ' + server.address().port);
+  console.log('Listening LFS on port ' + server.address().port);
+}
+
+if (SSH_ENABLED) {
+    var sshServer = require('./lib/ssh_server');
+    const SSH_PORT = parseInt(config.get('ssh.port'));
+    const SSH_IP = config.get('ssh.ip');
+    sshServer.listen(SSH_PORT, SSH_IP, function() {
+        console.log('Listening SSH on port ' + this.address().port);
+    });
 }

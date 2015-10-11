@@ -12,6 +12,7 @@
   "repository": "kzwang/node-git-lfs",
   "dependencies": {
     "aws-sdk": "^2.2.9",
+    "btoa": "^1.1.2",
     "co": "^4.6.0",
     "co-body": "^4.0.0",
     "co-express": "^1.2.1",
@@ -20,7 +21,9 @@
     "jsonschema": "^1.0.2",
     "lodash": "^3.10.1",
     "mongodb": "^2.0.45",
-    "morgan": "~1.6.1"
+    "mongoose": "^4.1.10",
+    "morgan": "~1.6.1",
+    "ssh2": "^0.4.11"
   },
   "devDependencies": {
     "chai": "^3.3.0",
