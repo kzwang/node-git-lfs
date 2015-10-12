@@ -6,6 +6,12 @@
     "type": "s3",
     "options": {}
   },
+  "jwt": {
+    "algorithm": "HS256",
+    "secret": "node-git-lfs-jwt-test-key",
+    "issuer": "node-git-lfs",
+    "expiresIn": "30m"
+  },
   "authenticator": {
     "type": "basic",
     "options": {

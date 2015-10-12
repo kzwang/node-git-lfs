@@ -5,6 +5,7 @@ var request = require('supertest');
 var config = require('config');
 var stream = require('stream');
 var AWS = require('aws-sdk');
+var jwt = require('jsonwebtoken');
 var S3rver = require('s3rver');
 
 var chai = require('chai');
@@ -13,8 +14,11 @@ chai.use(require('chai-string'));
 var should = chai.should();
 
 var app = require('../lib/app');
+var generateJWTToken = require('../lib/routes/batch').generateJWTToken;
 
 const BASE_URL = config.get('base_url');
+
+const JWT_CONFIG = config.get('jwt');
 
 
 describe('Batch Endpoint', function() {
@@ -109,13 +113,14 @@ describe('Batch Endpoint', function() {
 
 
     it('should handle upload operation', function(done) {
+        var oid = 'testid';
         request(app)
             .post('/testuser/testrepo/objects/batch')
             .send({
                 "operation": "upload",
                 "objects": [
                     {
-                        "oid": "1111111",
+                        "oid": oid,
                         "size": 123
                     }
                 ]
@@ -123,7 +128,7 @@ describe('Batch Endpoint', function() {
             .expect(function(res) {
                 should.exist(res.body.objects);
                 res.body.objects.should.have.length(1);
-                res.body.objects[0].oid.should.equal('1111111');
+                res.body.objects[0].oid.should.equal(oid);
                 res.body.objects[0].size.should.equal(123);
 
                 should.exist(res.body.objects[0].actions);
@@ -131,13 +136,41 @@ describe('Batch Endpoint', function() {
                 should.exist(res.body.objects[0].actions.verify);
 
 
-                res.body.objects[0].actions.upload.href.should.startWith(BASE_URL + 'testuser/testrepo/objects/');
+                res.body.objects[0].actions.upload.href.should.equal(BASE_URL + 'testuser/testrepo/objects/' + oid);
                 res.body.objects[0].actions.verify.href.should.equal(BASE_URL + 'testuser/testrepo/objects/verify');
 
                 should.exist(res.body.objects[0].actions.upload.header);
                 should.exist(res.body.objects[0].actions.upload.header['Authorization']);
                 should.exist(res.body.objects[0].actions.verify.header);
                 should.exist(res.body.objects[0].actions.verify.header['Authorization']);
+
+                res.body.objects[0].actions.upload.header['Authorization'].should.startWith('JWT ');
+                res.body.objects[0].actions.verify.header['Authorization'].should.startWith('JWT ');
+
+                should.exist(res.body.objects[0].actions.upload.expires_at);
+                should.exist(res.body.objects[0].actions.verify.expires_at);
+
+                let authorization = res.body.objects[0].actions.upload.header['Authorization'];
+                let token = authorization.substring(4, authorization.length);
+                let decoded = jwt.verify(token, JWT_CONFIG.secret, {issuer: JWT_CONFIG.issuer});
+                decoded.user.should.equal('testuser');
+                decoded.repo.should.equal('testrepo');
+                decoded.oid.should.equal(oid);
+                decoded.action.should.equal('upload');
+                should.exist(decoded.iat);
+                should.exist(decoded.exp);
+
+
+                authorization = res.body.objects[0].actions.verify.header['Authorization'];
+                token = authorization.substring(4, authorization.length);
+                decoded = jwt.verify(token, JWT_CONFIG.secret, {issuer: JWT_CONFIG.issuer});
+                decoded.user.should.equal('testuser');
+                decoded.repo.should.equal('testrepo');
+                decoded.action.should.equal('verify');
+                should.exist(decoded.iat);
+                should.exist(decoded.exp);
+                should.not.exist(decoded.oid);
+
             })
             .expect(200, done);
     });
@@ -171,6 +204,7 @@ describe('Batch Endpoint', function() {
         // upload test file
         request(app)
             .put('/testuser/testrepo/objects/testid')
+            .set('Authorization', 'JWT ' + generateJWTToken('upload', 'testuser', 'testrepo', 'testid'))
             .send(body)
             .end(function() {
                 request(app)
@@ -197,6 +231,21 @@ describe('Batch Endpoint', function() {
 
                         should.exist(res.body.objects[0].actions.download.header);
                         should.exist(res.body.objects[0].actions.download.header['Authorization']);
+
+                        res.body.objects[0].actions.download.header['Authorization'].should.startWith('JWT ');
+
+                        should.exist(res.body.objects[0].actions.download.expires_at);
+
+                        let authorization = res.body.objects[0].actions.download.header['Authorization'];
+                        let token = authorization.substring(4, authorization.length);
+                        let decoded = jwt.verify(token, JWT_CONFIG.secret, {issuer: JWT_CONFIG.issuer});
+                        decoded.user.should.equal('testuser');
+                        decoded.repo.should.equal('testrepo');
+                        decoded.oid.should.equal('testid');
+                        decoded.action.should.equal('download');
+                        should.exist(decoded.iat);
+                        should.exist(decoded.exp);
+
                     })
                     .expect(200, done);
             });
@@ -204,13 +253,14 @@ describe('Batch Endpoint', function() {
     });
 
     it('should handle verify operation', function(done) {
+        var oid = 'testid';
         request(app)
             .post('/testuser/testrepo/objects/batch')
             .send({
                 "operation": "verify",
                 "objects": [
                     {
-                        "oid": "1111111",
+                        "oid": oid,
                         "size": 123
                     }
                 ]
@@ -218,7 +268,7 @@ describe('Batch Endpoint', function() {
             .expect(function(res) {
                 should.exist(res.body.objects);
                 res.body.objects.should.have.length(1);
-                res.body.objects[0].oid.should.equal('1111111');
+                res.body.objects[0].oid.should.equal(oid);
                 res.body.objects[0].size.should.equal(123);
 
                 should.exist(res.body.objects[0].actions);
@@ -228,6 +278,20 @@ describe('Batch Endpoint', function() {
 
                 should.exist(res.body.objects[0].actions.verify.header);
                 should.exist(res.body.objects[0].actions.verify.header['Authorization']);
+
+                res.body.objects[0].actions.verify.header['Authorization'].should.startWith('JWT ');
+
+                should.exist(res.body.objects[0].actions.verify.expires_at);
+
+                let authorization = res.body.objects[0].actions.verify.header['Authorization'];
+                let token = authorization.substring(4, authorization.length);
+                let decoded = jwt.verify(token, JWT_CONFIG.secret, {issuer: JWT_CONFIG.issuer});
+                decoded.user.should.equal('testuser');
+                decoded.repo.should.equal('testrepo');
+                decoded.action.should.equal('verify');
+                should.exist(decoded.iat);
+                should.exist(decoded.exp);
+                should.not.exist(decoded.oid);
             })
             .expect(200, done);
     });

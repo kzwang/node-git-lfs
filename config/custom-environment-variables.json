@@ -2,6 +2,12 @@
   "base_url": "LFS_BASE_URL",
   "port": "LFS_PORT",
   "private": "LFS_PRIVATE",
+  "jwt": {
+    "algorithm": "LFS_JWT_ALGORITHM",
+    "secret": "LFS_JWT_SECRET",
+    "issuer": "LFS_JWT_ISSUER",
+    "expiresIn": "LFS_JWT_EXPIRES"
+  },
   "store": {
     "type": "LFS_STORE_TYPE",
     "options": {

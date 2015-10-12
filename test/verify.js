@@ -13,10 +13,15 @@ chai.use(require('chai-string'));
 var should = chai.should();
 
 var app = require('../lib/app');
+var generateJWTToken = require('../lib/routes/batch').generateJWTToken;
 
 const BASE_URL = config.get('base_url');
 
 
+const TEST_USER = "testuser";
+const TEST_REPO = "testrepo";
+const TEST_OID = "testoid";
+const TEST_BODY = "testBody";
 
 describe('Verify Endpoint', function() {
 
@@ -70,18 +75,18 @@ describe('Verify Endpoint', function() {
     });
 
     it('should return 200 for valid object', function(done) {
-        let body = 'testbody';
-
         // upload test file
         request(app)
-            .put('/testuser/testrepo/objects/testid')
-            .send(body)
+            .put(`/${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`)
+            .set('Authorization', 'JWT ' + generateJWTToken('upload', TEST_USER, TEST_REPO, TEST_OID))
+            .send(TEST_BODY)
             .end(function() {
                 request(app)
-                    .post('/testuser/testrepo/objects/verify')
+                    .post(`/${TEST_USER}/${TEST_REPO}/objects/verify`)
+                    .set('Authorization', 'JWT ' + generateJWTToken('verify', TEST_USER, TEST_REPO))
                     .send({
-                        "oid": "testid",
-                        "size": body.length
+                        "oid": TEST_OID,
+                        "size": TEST_BODY.length
                     })
                     .expect(200, done);
             });
@@ -89,7 +94,8 @@ describe('Verify Endpoint', function() {
 
     it('should return 422 for non exist object', function(done) {
         request(app)
-            .post('/testuser/testrepo/objects/verify')
+            .post(`/${TEST_USER}/${TEST_REPO}/objects/verify`)
+            .set('Authorization', 'JWT ' + generateJWTToken('verify', TEST_USER, TEST_REPO))
             .send({
                 "oid": "non_exist",
                 "size": 100
@@ -98,17 +104,18 @@ describe('Verify Endpoint', function() {
     });
 
     it('should return 422 for size not match', function(done) {
-        let body = 'testbody';
         // upload test file
         request(app)
-            .put('/testuser/testrepo/objects/testid')
-            .send(body)
+            .put(`/${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`)
+            .set('Authorization', 'JWT ' + generateJWTToken('upload', TEST_USER, TEST_REPO, TEST_OID))
+            .send(TEST_BODY)
             .end(function() {
                 request(app)
-                    .post('/testuser/testrepo/objects/verify')
+                    .post(`/${TEST_USER}/${TEST_REPO}/objects/verify`)
+                    .set('Authorization', 'JWT ' + generateJWTToken('verify', TEST_USER, TEST_REPO))
                     .send({
-                        "oid": "testid",
-                        "size": body.length + 1
+                        "oid": TEST_OID,
+                        "size": TEST_BODY.length + 1
                     })
                     .expect(422, done);
             });
@@ -116,10 +123,78 @@ describe('Verify Endpoint', function() {
 
     it('should return 422 for invalid request', function(done) {
         request(app)
-            .post('/testuser/testrepo/objects/verify')
+            .post(`/${TEST_USER}/${TEST_REPO}/objects/verify`)
+            .set('Authorization', 'JWT ' + generateJWTToken('verify', TEST_USER, TEST_REPO))
             .send({
                 "test": "test"
             })
             .expect(422, done);
+    });
+
+
+    it('should return 401 if not Authorization header', function(done) {
+        request(app)
+            .post(`/${TEST_USER}/${TEST_REPO}/objects/verify`)
+            .send({
+                "oid": TEST_OID,
+                "size": TEST_BODY.length
+            })
+            .expect(401, done);
+    });
+
+    it('should return 401 if Authorization header not start with JWT', function(done) {
+        request(app)
+            .post(`/${TEST_USER}/${TEST_REPO}/objects/verify`)
+            .set('Authorization', 'Basic test')
+            .send({
+                "oid": TEST_OID,
+                "size": TEST_BODY.length
+            })
+            .expect(401, done);
+    });
+
+    it('should return 403 if user in token not correct', function(done) {
+        request(app)
+            .post(`/${TEST_USER}/${TEST_REPO}/objects/verify`)
+            .set('Authorization', 'JWT ' + generateJWTToken('verify', TEST_USER + "1", TEST_REPO))
+            .send({
+                "oid": TEST_OID,
+                "size": TEST_BODY.length
+            })
+            .expect(403, done);
+    });
+
+    it('should return 403 if repo in token not correct', function(done) {
+        request(app)
+            .post(`/${TEST_USER}/${TEST_REPO}/objects/verify`)
+            .set('Authorization', 'JWT ' + generateJWTToken('verify', TEST_USER, TEST_REPO + "1"))
+            .send({
+                "oid": TEST_OID,
+                "size": TEST_BODY.length
+            })
+            .expect(403, done);
+    });
+
+
+    it('should return 403 if action in token not correct', function(done) {
+        request(app)
+            .post(`/${TEST_USER}/${TEST_REPO}/objects/verify`)
+            .set('Authorization', 'JWT ' + generateJWTToken('verify1', TEST_USER, TEST_REPO))
+            .send({
+                "oid": TEST_OID,
+                "size": TEST_BODY.length
+            })
+            .expect(403, done);
+    });
+
+    it('should return 403 if invalid JWT token', function(done) {
+        request(app)
+            .post(`/${TEST_USER}/${TEST_REPO}/objects/verify`)
+            .set('Authorization', 'JWT test')
+            .send({
+                "oid": TEST_OID,
+                "size": TEST_BODY.length
+            })
+            .expect(403, done);
     });
 });

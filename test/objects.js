@@ -14,9 +14,13 @@ var should = chai.should();
 
 
 var app = require('../lib/app');
-
+var generateJWTToken = require('../lib/routes/batch').generateJWTToken;
 
 const BASE_URL = config.get('base_url');
+
+const TEST_USER = "testuser";
+const TEST_REPO = "testrepo";
+const TEST_OID = "testoid";
 
 
 
@@ -71,31 +75,154 @@ describe('Objects Endpoint', function() {
 
     });
 
-    it('should return 200 for put object', function(done) {
-        request(app)
-            .put('/testuser/testrepo/objects/test')
-            .send('testObject')
-            .expect(200, done);
+    describe('PUT', function() {
+        it('should return 200 for put object', function(done) {
+            request(app)
+                .put(`/${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`)
+                .set('Authorization', 'JWT ' + generateJWTToken('upload', TEST_USER, TEST_REPO, TEST_OID))
+                .send('testObject')
+                .expect(200, done);
+        });
+
+        it('should return 401 if not Authorization header', function(done) {
+            request(app)
+                .put(`/${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`)
+                .send('testObject')
+                .expect(401, done);
+        });
+
+        it('should return 401 if Authorization header not start with JWT', function(done) {
+            request(app)
+                .put(`/${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`)
+                .set('Authorization', 'Basic test')
+                .send('testObject')
+                .expect(401, done);
+        });
+
+        it('should return 403 if user in token not correct', function(done) {
+            request(app)
+                .put(`/${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`)
+                .set('Authorization', 'JWT ' + generateJWTToken('upload', TEST_USER + "1", TEST_REPO, TEST_OID))
+                .send('testObject')
+                .expect(403, done);
+        });
+
+        it('should return 403 if repo in token not correct', function(done) {
+            request(app)
+                .put(`/${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`)
+                .set('Authorization', 'JWT ' + generateJWTToken('upload', TEST_USER, TEST_REPO + "1", TEST_OID))
+                .send('testObject')
+                .expect(403, done);
+        });
+
+        it('should return 403 if oid in token not correct', function(done) {
+            request(app)
+                .put(`/${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`)
+                .set('Authorization', 'JWT ' + generateJWTToken('upload', TEST_USER, TEST_REPO, TEST_OID + "1"))
+                .send('testObject')
+                .expect(403, done);
+        });
+
+        it('should return 403 if action in token not correct', function(done) {
+            request(app)
+                .put(`/${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`)
+                .set('Authorization', 'JWT ' + generateJWTToken('upload1', TEST_USER, TEST_REPO, TEST_OID))
+                .send('testObject')
+                .expect(403, done);
+        });
+
+        it('should return 403 if invalid JWT token', function(done) {
+            request(app)
+                .put(`/${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`)
+                .set('Authorization', 'JWT test')
+                .send('testObject')
+                .expect(403, done);
+        });
     });
 
-    it('should return 404 for get non exist object', function(done) {
-        request(app)
-            .get('/testuser/testrepo/objects/not_exist')
-            .expect(404, done);
+    describe('GET', function() {
+        it('should return 404 for get non exist object', function(done) {
+            request(app)
+                .get(`/${TEST_USER}/${TEST_REPO}/objects/not_exist`)
+                .set('Authorization', 'JWT ' + generateJWTToken('download', TEST_USER, TEST_REPO, "not_exist"))
+                .expect(404, done);
+        });
+
+        it('should success for get exist object', function (done) {
+            let testObject = 'testObject';
+            request(app)
+                .put(`/${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`)
+                .set('Authorization', 'JWT ' + generateJWTToken('upload', TEST_USER, TEST_REPO, TEST_OID))
+                .send(testObject)
+                .end(function(err, data) {
+                    if (err) return done(err);
+                    request(app)
+                        .get(`/${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`)
+                        .set('Authorization', 'JWT ' + generateJWTToken('download', TEST_USER, TEST_REPO, TEST_OID))
+                        .expect(testObject)
+                        .expect('Content-Length', String(testObject.length))
+                        .expect(200, done);
+                });
+        });
+
+
+        it('should return 401 if not Authorization header', function(done) {
+            request(app)
+                .get(`/${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`)
+                .send('testObject')
+                .expect(401, done);
+        });
+
+        it('should return 401 if Authorization header not start with JWT', function(done) {
+            request(app)
+                .get(`/${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`)
+                .set('Authorization', 'Basic test')
+                .send('testObject')
+                .expect(401, done);
+        });
+
+        it('should return 403 if user in token not correct', function(done) {
+            request(app)
+                .get(`/${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`)
+                .set('Authorization', 'JWT ' + generateJWTToken('download', TEST_USER + "1", TEST_REPO, TEST_OID))
+                .send('testObject')
+                .expect(403, done);
+        });
+
+        it('should return 403 if repo in token not correct', function(done) {
+            request(app)
+                .get(`/${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`)
+                .set('Authorization', 'JWT ' + generateJWTToken('download', TEST_USER, TEST_REPO + "1", TEST_OID))
+                .send('testObject')
+                .expect(403, done);
+        });
+
+        it('should return 403 if oid in token not correct', function(done) {
+            request(app)
+                .get(`/${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`)
+                .set('Authorization', 'JWT ' + generateJWTToken('download', TEST_USER, TEST_REPO, TEST_OID + "1"))
+                .send('testObject')
+                .expect(403, done);
+        });
+
+        it('should return 403 if action in token not correct', function(done) {
+            request(app)
+                .get(`/${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`)
+                .set('Authorization', 'JWT ' + generateJWTToken('download1', TEST_USER, TEST_REPO, TEST_OID))
+                .send('testObject')
+                .expect(403, done);
+        });
+
+        it('should return 403 if invalid JWT token', function(done) {
+            request(app)
+                .get(`/${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`)
+                .set('Authorization', 'JWT test')
+                .send('testObject')
+                .expect(403, done);
+        });
     });
 
-    it('should success for get exist object', function (done) {
-        let testObject = 'testObject';
-        request(app)
-            .put('/testuser/testrepo/objects/test')
-            .send(testObject)
-            .end(function(err, data) {
-                if (err) return done(err);
-                request(app)
-                    .get('/testuser/testrepo/objects/test')
-                    .expect(testObject)
-                    .expect('Content-Length', String(testObject.length))
-                    .expect(200, done);
-            });
-    });
+
+
+
 });
