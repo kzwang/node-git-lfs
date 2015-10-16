@@ -14,7 +14,7 @@ chai.use(require('chai-string'));
 var should = chai.should();
 
 var app = require('../lib/app');
-var generateJWTToken = require('../lib/routes/batch').generateJWTToken;
+var generateJWTToken = require('../lib/store')._generateJWTToken;
 
 const BASE_URL = config.get('base_url');
 
