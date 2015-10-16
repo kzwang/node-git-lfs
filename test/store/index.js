@@ -2,6 +2,8 @@
 
 var config = require('config');
 
+var jwt = require('jsonwebtoken');
+
 var chai = require('chai');
 chai.use(require('chai-string'));
 
@@ -12,6 +14,8 @@ var expect = chai.expect;
 var Store = require('../../lib/store');
 
 const BASE_URL = config.get('base_url');
+
+const JWT_CONFIG = config.get('jwt');
 
 const TEST_USER = 'testUser';
 const TEST_REPO = 'testRepo';
@@ -40,27 +44,57 @@ describe('Abstract Store', function() {
     });
 
     it('should return upload action', function() {
-        var action = store.getUploadAction(TEST_USER, TEST_REPO, TEST_OID);
+        var action = store.getUploadAction(TEST_USER, TEST_REPO, TEST_OID, 0);
         action.href.should.equal(`${BASE_URL}${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`);
         should.exist(action.expires_at);
         should.exist(action.header);
         action.header['Authorization'].should.startWith('JWT ');
+
+        let authorization = action.header['Authorization'];
+        let token = authorization.substring(4, authorization.length);
+        let decoded = jwt.verify(token, JWT_CONFIG.secret, {issuer: JWT_CONFIG.issuer});
+        decoded.user.should.equal(TEST_USER);
+        decoded.repo.should.equal(TEST_REPO);
+        decoded.oid.should.equal(TEST_OID);
+        decoded.action.should.equal('upload');
+        should.exist(decoded.iat);
+        should.exist(decoded.exp);
     });
 
     it('should return download action', function() {
-        var action = store.getDownloadAction(TEST_USER, TEST_REPO, TEST_OID);
+        var action = store.getDownloadAction(TEST_USER, TEST_REPO, TEST_OID, 0);
         action.href.should.equal(`${BASE_URL}${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`);
         should.exist(action.expires_at);
         should.exist(action.header);
         action.header['Authorization'].should.startWith('JWT ');
+
+        let authorization = action.header['Authorization'];
+        let token = authorization.substring(4, authorization.length);
+        let decoded = jwt.verify(token, JWT_CONFIG.secret, {issuer: JWT_CONFIG.issuer});
+        decoded.user.should.equal(TEST_USER);
+        decoded.repo.should.equal(TEST_REPO);
+        decoded.oid.should.equal(TEST_OID);
+        decoded.action.should.equal('download');
+        should.exist(decoded.iat);
+        should.exist(decoded.exp);
     });
 
     it('should return verify action', function() {
-        var action = store.getVerifyAction(TEST_USER, TEST_REPO, TEST_OID);
+        var action = store.getVerifyAction(TEST_USER, TEST_REPO, TEST_OID, 0);
         action.href.should.equal(`${BASE_URL}${TEST_USER}/${TEST_REPO}/objects/verify`);
         should.exist(action.expires_at);
         should.exist(action.header);
         action.header['Authorization'].should.startWith('JWT ');
+
+        let authorization = action.header['Authorization'];
+        let token = authorization.substring(4, authorization.length);
+        let decoded = jwt.verify(token, JWT_CONFIG.secret, {issuer: JWT_CONFIG.issuer});
+        decoded.user.should.equal(TEST_USER);
+        decoded.repo.should.equal(TEST_REPO);
+        decoded.action.should.equal('verify');
+        should.exist(decoded.iat);
+        should.exist(decoded.exp);
+        should.not.exist(decoded.oid);
     });
 
 });

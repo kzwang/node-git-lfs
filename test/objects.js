@@ -30,7 +30,7 @@ describe('Objects Endpoint', function() {
 
     beforeEach(function (done) {
         let store_type = config.get('store.type');
-        if (store_type === 's3') {
+        if (store_type === 's3' || store_type === 's3_direct') {
             // cleanup s3 folder
             child_process.execSync('rm -rf s3 && mkdir -p s3', {
                 cwd: '/tmp'
