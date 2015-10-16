@@ -11,7 +11,7 @@
   },
   "repository": "kzwang/node-git-lfs",
   "dependencies": {
-    "aws-sdk": "^2.2.9",
+    "aws-sdk": "^2.2.10",
     "btoa": "^1.1.2",
     "co": "^4.6.0",
     "co-body": "^4.0.0",
@@ -21,11 +21,12 @@
     "jsonschema": "^1.0.2",
     "jsonwebtoken": "^5.4.0",
     "lodash": "^3.10.1",
-    "mongodb": "^2.0.45",
-    "mongoose": "^4.1.10",
+    "mongodb": "^2.0.46",
+    "mongoose": "^4.1.11",
     "morgan": "~1.6.1",
     "ms": "^0.7.1",
-    "ssh2": "^0.4.11"
+    "ssh2": "^0.4.11",
+    "winston": "^1.1.0"
   },
   "devDependencies": {
     "chai": "^3.3.0",
