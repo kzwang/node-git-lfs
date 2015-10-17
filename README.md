@@ -41,6 +41,7 @@ If **storage type** is `s3` or `s3_direct`:
  - `LFS_STORE_S3_BUCKET` - AWS S3 bucket - **required**
  - `LFS_STORE_S3_ENDPOINT` - AWS S3 endpoint, normally this will be set by region
  - `LFS_STORE_S3_REGION` - AWS S3 region
+ - `LFS_STORE_S3_STORAGE_CLASS` - AWS S3 storage class, can be `STANDARD`, `STANDARD_IA` or `REDUCED_REDUNDANCY`, defaults to `STANDARD`
 
 If **storage type** is `grid`:
 
