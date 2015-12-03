@@ -7,3 +7,4 @@ env:
   - LFS_STORE_TYPE=s3
   - LFS_STORE_TYPE=grid
   - LFS_STORE_TYPE=s3_direct
+  - LFS_STORE_TYPE=local

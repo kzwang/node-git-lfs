@@ -46,6 +46,10 @@ If **storage type** is `s3` or `s3_direct`:
 If **storage type** is `grid`:
 
  - `LFS_STORE_GRID_CONNECTION` - MongoDB connection URL - **required**
+ 
+If **storage type** is `local`:
+
+ - `LFS_STORE_LOCAL_PATH` - Path to storage location - **required**
 
 If **authenticator type** is `basic`:
 
