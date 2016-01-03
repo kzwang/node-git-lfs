@@ -1,5 +1,6 @@
 {
   "base_url": "http://localhost:3000/",
+  "lfs_overlay": false,
   "port": 3000,
   "private": false,
   "store": {
