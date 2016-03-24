@@ -25,7 +25,8 @@
     "options": {
       "username": "LFS_AUTHENTICATOR_USERNAME",
       "password": "LFS_AUTHENTICATOR_PASSWORD",
-      "client_public_key": "LFS_AUTHENTICATOR_CLIENT_PUBLIC_KEY"
+      "client_public_key": "LFS_AUTHENTICATOR_CLIENT_PUBLIC_KEY",
+	  "client_public_key_path": "LFS_AUTHENTICATOR_CLIENT_PUBLIC_KEY_PATH"
     }
   },
   "ssh": {

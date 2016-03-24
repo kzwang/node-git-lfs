@@ -56,6 +56,7 @@ If **authenticator type** is `basic`:
   - `LFS_AUTHENTICATOR_USERNAME` - Username - **required**
   - `LFS_AUTHENTICATOR_PASSWORD` - Password - **required**
   - `LFS_AUTHENTICATOR_CLIENT_PUBLIC_KEY` - Location of the client's public key
+  - `LFS_AUTHENTICATOR_CLIENT_PUBLIC_KEY_PATH` - Location of the client's public key folder (e.g. './ssh/public/')
 
 
 ##### SSH Environment Variables
@@ -65,3 +66,4 @@ If **authenticator type** is `basic`:
   - `LFS_SSH_IP` - SSH server bind IP, defaults to `0.0.0.0`
   - `LFS_SSH_PUBLIC_KEY` - SSH server public key - **required** if SSH is enabled
   - `LFS_SSH_PRIVATE_KEY` - SSH server private key - **required** if SSH is enabled
+  
