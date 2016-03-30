@@ -17,6 +17,10 @@
       "endpoint": "LFS_STORE_S3_ENDPOINT",
       "region": "LFS_STORE_S3_REGION",
       "storage_class": "LFS_STORE_S3_STORAGE_CLASS",
+	  "azure_storage_account": "AZURE_STORAGE_ACCOUNT",
+	  "azure_storage_access_key": "AZURE_STORAGE_ACCESS_KEY",
+	  "azure_storage_connection_string": "AZURE_STORAGE_CONNECTION_STRING",
+	  "azure_storage_container": "AZURE_STORAGE_CONTAINER",
       "grid_connection": "LFS_STORE_GRID_CONNECTION"
     }
   },

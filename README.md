@@ -14,7 +14,7 @@ npm install node-git-lfs
 
   - Support [Git LFS v1 Batch API](https://github.com/github/git-lfs/blob/master/docs/api/http-v1-batch.md)
   - Support [SSH Authentication](https://github.com/github/git-lfs/tree/master/docs/api#authentication)
-  - Multiple store supported - currently `AWS S3` and `MongoDB GridFS`
+  - Multiple store supported - currently `AWS S3`, `Azure Storage`, `MongoDB GridFS`, `file system`
   - Multiple authentication method support - currently `basic` and `none`
   - Use [JWT](http://jwt.io) to secure `download`, `upload` and `verify` endpoints
   - Option to directly upload to and download from AWS S3
@@ -43,6 +43,13 @@ If **storage type** is `s3` or `s3_direct`:
  - `LFS_STORE_S3_REGION` - AWS S3 region
  - `LFS_STORE_S3_STORAGE_CLASS` - AWS S3 storage class, can be `STANDARD`, `STANDARD_IA` or `REDUCED_REDUNDANCY`, defaults to `STANDARD`
 
+If **storage type** is `azure`:
+
+ - `AZURE_STORAGE_ACCOUNT` - Azure storage account - **required**
+ - `AZURE_STORAGE_ACCESS_KEY` - Azure access key - **required**
+ - `AZURE_STORAGE_CONNECTION_STRING` - Azure connection string - **required**
+ - `AZURE_STORAGE_CONTAINER` - Azure container name
+
 If **storage type** is `grid`:
 
  - `LFS_STORE_GRID_CONNECTION` - MongoDB connection URL - **required**
@@ -55,7 +62,7 @@ If **authenticator type** is `basic`:
 
   - `LFS_AUTHENTICATOR_USERNAME` - Username - **required**
   - `LFS_AUTHENTICATOR_PASSWORD` - Password - **required**
-  - `LFS_AUTHENTICATOR_CLIENT_PUBLIC_KEY` - Location of the client's public key
+  - `LFS_AUTHENTICATOR_CLIENT_PUBLIC_KEY` - Location of the client's public key (this option is stronger than setting the path)
   - `LFS_AUTHENTICATOR_CLIENT_PUBLIC_KEY_PATH` - Location of the client's public key folder (e.g. './ssh/public/')
 
 
@@ -67,3 +74,44 @@ If **authenticator type** is `basic`:
   - `LFS_SSH_PUBLIC_KEY` - SSH server public key - **required** if SSH is enabled
   - `LFS_SSH_PRIVATE_KEY` - SSH server private key - **required** if SSH is enabled
   
+## Usage
+
+These are some sample files to show how it could look on your machines
+
+#### .gitattributes
+
+``` bash
+*.psd filter=lfs diff=lfs merge=lfs -text
+*.svg filter=lfs diff=lfs merge=lfs -text
+```
+
+#### .gitconfig
+
+``` bash
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+	ignorecase = true
+	precomposeunicode = true
+[lfs]
+	url = "ssh://git@myserver.local:2222/user/repository"
+	batch = true
+[remote "origin"]
+	url = git@github.org:user/repository.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+	remote = origin
+	merge = refs/heads/master
+	lfsurl = "ssh://git@myserver.local:2222/user/repository"
+```
+
+#### copy the public key to clipboard
+
+```bash
+cat ~/.ssh/id_rsa.pub | pbcopy
+```
+
+## License
+
+This Software is released under the [Apache License](LICENSE)
