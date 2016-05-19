@@ -42,7 +42,7 @@ If **storage type** is `s3` or `s3_direct`:
  - `LFS_STORE_S3_ENDPOINT` - AWS S3 endpoint, normally this will be set by region
  - `LFS_STORE_S3_REGION` - AWS S3 region
  - `LFS_STORE_S3_STORAGE_CLASS` - AWS S3 storage class, can be `STANDARD`, `STANDARD_IA` or `REDUCED_REDUNDANCY`, defaults to `STANDARD`
- - `LFS_STORE_S3_SIGNATURE_VERSION` - AWS S3 signature version, if none give, v2 will be used. If your region is Frankfurt, you'll have to pass "v4" as version
+ - `LFS_STORE_S3_SIGNATURE_VERSION` - AWS S3 signature version, if none given, v2 will be used. If your region is Frankfurt, you'll have to pass "v4" as version
 
 If **storage type** is `azure`:
 
