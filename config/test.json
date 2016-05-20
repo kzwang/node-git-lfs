@@ -16,8 +16,8 @@
     "port": 2222,
     "ip": "0.0.0.0",
     "key": {
-      "public": "./ssh/server.pub",
-      "private": "./ssh/server.pri"
+      "public": "./ssh/public/server.pub",
+      "private": "./ssh/private/server.pri"
     }
   }
 }

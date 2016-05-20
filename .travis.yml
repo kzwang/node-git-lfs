@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "4.1.2"
+  - "5"
 services:
   - mongodb
 env:
@@ -8,3 +8,4 @@ env:
   - LFS_STORE_TYPE=grid
   - LFS_STORE_TYPE=s3_direct
   - LFS_STORE_TYPE=local
+  

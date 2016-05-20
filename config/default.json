@@ -17,7 +17,7 @@
     "type": "basic",
     "options": {
       "username": "test",
-      "password": "test"
+      "password": "test",
 	  "client_public_key_path": "./ssh/public/"
     }
   },
