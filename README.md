@@ -1,7 +1,7 @@
 # Node Git LFS
-[![Build Status](https://travis-ci.org/kzwang/node-git-lfs.svg?branch=master)](https://travis-ci.org/kzwang/node-git-lfs)
-[![Coverage Status](https://coveralls.io/repos/kzwang/node-git-lfs/badge.svg?branch=master&service=github)](https://coveralls.io/github/kzwang/node-git-lfs?branch=master)
-[![Code Climate](https://codeclimate.com/github/kzwang/node-git-lfs/badges/gpa.svg)](https://codeclimate.com/github/kzwang/node-git-lfs)
+[![Build Status](https://travis-ci.org/hons82/node-git-lfs.svg?branch=master)](https://travis-ci.org/hons82/node-git-lfs)
+[![Coverage Status](https://coveralls.io/repos/hons82/node-git-lfs/badge.svg?branch=master&service=github)](https://coveralls.io/github/hons82/node-git-lfs?branch=master)
+[![Code Climate](https://codeclimate.com/github/hons82/node-git-lfs/badges/gpa.svg)](https://codeclimate.com/github/hons82/node-git-lfs)
 
 A NodeJS implementation of [Git LFS](https://git-lfs.github.com/) Server.
 
@@ -27,6 +27,7 @@ All configurations can be done via environment variable or configuration file
 
  - `LFS_BASE_URL` - URL of the LFS server - **required**
  - `LFS_PORT` - HTTP portal of the LFS server, defaults to `3000` - **required**
+ - `LFS_OVERLAY` - Bool use Github's /info/lfs style url, defaults to `false` - **required**
  - `LFS_STORE_TYPE` - Object store type, can be either `s3` (for AWS S3), `s3_direct` (for direct upload and download from AWS S3) or `grid` (for MongoDB GridFS), defaults to `s3`  - **required**
  - `LFS_AUTHENTICATOR_TYPE` - Authenticator type, can be `basic` (for basic username and password), `none` (for no authentication), defaults to `none` - **required**
  - `LFS_JWT_ALGORITHM` - JWT signature algorithm, defaults to `HS256`
