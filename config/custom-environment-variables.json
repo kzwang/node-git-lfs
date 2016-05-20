@@ -1,6 +1,7 @@
 {
   "base_url": "LFS_BASE_URL",
   "port": "LFS_PORT",
+  "lfs_overlay": LFS_OVERLAY,
   "private": "LFS_PRIVATE",
   "jwt": {
     "algorithm": "LFS_JWT_ALGORITHM",

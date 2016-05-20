@@ -1,6 +1,7 @@
 {
   "base_url": "http://localhost:3000/",
   "port": 3000,
+  "lfs_overlay": false,
   "private": false,
   "store": {
     "type": "s3",
