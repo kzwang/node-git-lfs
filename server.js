@@ -7,7 +7,7 @@ var http = require('http');
 var config = require('config');
 var logger = require('winston');
 
-const PORT = parseInt(config.get('port'), 10) || 3000;
+const PORT = process.env.PORT || parseInt(config.get('port'), 10) || 3000;
 const SSH_ENABLED = config.get('ssh.enabled');
 
 app.set('port', PORT);

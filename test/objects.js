@@ -16,8 +16,6 @@ var should = chai.should();
 var app = require('../lib/app');
 var generateJWTToken = require('../lib/store')._generateJWTToken;
 
-const BASE_URL = config.get('base_url');
-
 const TEST_USER = "testuser";
 const TEST_REPO = "testrepo";
 const TEST_OID = "testoid";
