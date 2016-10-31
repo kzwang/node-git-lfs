@@ -7,7 +7,7 @@
     "test": "make test-coveralls"
   },
   "bin": {
-    "node-git-lfs": "./git-lfs-server.js"
+    "node-git-lfs": "./server.js"
   },
   "repository": "hons82/node-git-lfs",
   "dependencies": {
