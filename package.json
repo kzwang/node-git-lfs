@@ -1,42 +1,45 @@
 {
   "name": "node-git-lfs",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "description": "Git LFS server NodeJS implementation",
   "scripts": {
     "test": "make test-coveralls"
   },
   "bin": {
-    "node-git-lfs": "./git-lfs-server.js"
+    "node-git-lfs": "./server.js"
   },
-  "repository": "kzwang/node-git-lfs",
+  "repository": "hons82/node-git-lfs",
   "dependencies": {
-    "aws-sdk": "^2.2.10",
+    "aws-sdk": "^2.3.14",
+    "azure-storage": "^0.10.0",
     "btoa": "^1.1.2",
     "co": "^4.6.0",
-    "co-body": "^4.0.0",
+    "co-body": "^4.2.0",
     "co-express": "^1.2.1",
-    "config": "^1.16.0",
-    "express": "~4.13.3",
-    "jsonschema": "^1.0.2",
-    "jsonwebtoken": "^5.4.0",
-    "lodash": "^3.10.1",
-    "mongodb": "^2.0.46",
-    "mongoose": "^4.1.11",
-    "morgan": "~1.6.1",
+    "config": "^1.20.3",
+    "express": "~4.13.4",
+    "jsonschema": "^1.1.0",
+    "jsonwebtoken": "^7.0.0",
+    "lodash": "^4.12.0",
+    "mongodb": "^2.1.19",
+    "mongoose": "^4.4.17",
+    "morgan": "~1.7.0",
     "ms": "^0.7.1",
-    "ssh2": "^0.4.11",
-    "winston": "^1.1.0"
+    "node-fetch": "^1.5.2",
+    "ssh2": "^0.5.0",
+    "stream-length": "^1.0.2",
+    "winston": "^2.2.0"
   },
   "devDependencies": {
-    "chai": "^3.3.0",
-    "chai-string": "^1.1.3",
+    "chai": "^3.5.0",
+    "chai-string": "^1.2.0",
     "co-mocha": "^1.1.2",
-    "coveralls": "^2.11.4",
-    "istanbul": "^0.3.22",
-    "mocha": "^2.3.3",
-    "mocha-lcov-reporter": "^1.0.0",
-    "s3rver": "0.0.8",
-    "supertest": "^1.1.0"
+    "coveralls": "^2.11.9",
+    "istanbul": "^0.4.3",
+    "mocha": "^2.4.5",
+    "mocha-lcov-reporter": "^1.2.0",
+    "s3rver": "0.0.14",
+    "supertest": "^1.2.0"
   }
 }

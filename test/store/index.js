@@ -14,6 +14,7 @@ var expect = chai.expect;
 var Store = require('../../lib/store');
 
 const BASE_URL = config.get('base_url');
+const PORT = process.env.PORT || parseInt(config.get('port'), 10) || 3000;
 
 const JWT_CONFIG = config.get('jwt');
 
@@ -45,7 +46,7 @@ describe('Abstract Store', function() {
 
     it('should return upload action', function() {
         var action = store.getUploadAction(TEST_USER, TEST_REPO, TEST_OID, 0);
-        action.href.should.equal(`${BASE_URL}${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`);
+        action.href.should.equal(`${BASE_URL}:${PORT}/${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`);
         should.exist(action.expires_at);
         should.exist(action.header);
         action.header['Authorization'].should.startWith('JWT ');
@@ -63,7 +64,7 @@ describe('Abstract Store', function() {
 
     it('should return download action', function() {
         var action = store.getDownloadAction(TEST_USER, TEST_REPO, TEST_OID, 0);
-        action.href.should.equal(`${BASE_URL}${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`);
+        action.href.should.equal(`${BASE_URL}:${PORT}/${TEST_USER}/${TEST_REPO}/objects/${TEST_OID}`);
         should.exist(action.expires_at);
         should.exist(action.header);
         action.header['Authorization'].should.startWith('JWT ');
@@ -81,7 +82,7 @@ describe('Abstract Store', function() {
 
     it('should return verify action', function() {
         var action = store.getVerifyAction(TEST_USER, TEST_REPO, TEST_OID, 0);
-        action.href.should.equal(`${BASE_URL}${TEST_USER}/${TEST_REPO}/objects/verify`);
+        action.href.should.equal(`${BASE_URL}:${PORT}/${TEST_USER}/${TEST_REPO}/objects/verify`);
         should.exist(action.expires_at);
         should.exist(action.header);
         action.header['Authorization'].should.startWith('JWT ');

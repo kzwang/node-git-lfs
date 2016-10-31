@@ -14,10 +14,10 @@ var sshServer = require('../lib/ssh_server');
 var TestAuthenticator = require('./../lib/authenticator/test');
 
 const BASE_URL = config.get('base_url');
-
-const SSH_PORT = config.get('ssh.port');
-
+const PORT = process.env.PORT || parseInt(config.get('port'), 10) || 3000;
+const SSH_PORT = config.get('ssh.port') || 22;
 const SSH_IP = config.get('ssh.ip');
+
 sshServer.listen(SSH_PORT, SSH_IP, function() {
     console.log('Listening on port ' + this.address().port);
 });
@@ -89,7 +89,7 @@ describe('SSH Server', function() {
                     should.exist(resultObject.header);
                     should.exist(resultObject.header['Authorization']);
                     should.exist(resultObject.href);
-                    resultObject.href.should.equal(`${BASE_URL}user/repo.git`);
+                    resultObject.href.should.equal(`${BASE_URL}:${PORT}/user/repo.git`);
                     done();
                 });
             });
